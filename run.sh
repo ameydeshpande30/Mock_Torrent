@@ -15,7 +15,7 @@ cd ..
 
 sleep 5s
 curl localhost:5001/node -d '{"node": "127.0.0.1:5002"}' -H 'Content-Type: application/json'
-curl localhost:5001/node -d '{"node3de": "127.0.0.1:5003"}' -H 'Content-Type: application/json'
+curl localhost:5001/node -d '{"node": "127.0.0.1:5003"}' -H 'Content-Type: application/json'
 
 curl localhost:5002/node -d '{"node": "127.0.0.1:5001"}' -H 'Content-Type: application/json'
 curl localhost:5002/node -d '{"node": "127.0.0.1:5003"}' -H 'Content-Type: application/json'
