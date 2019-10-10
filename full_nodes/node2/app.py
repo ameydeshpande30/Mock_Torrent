@@ -26,7 +26,6 @@ def full_node():
 @app.route("/torrent", methods=['POST'])
 def torrent():
     content = request.get_json(silent=True)
-    print(content)
     name = content["name"]
     parts = content["parts"]
     file_hash = content["fileHash"]
@@ -34,14 +33,23 @@ def torrent():
     db.addData(name, parts, file_hash, ip)
     return jsonify({"code" : 200})
 
-@app.route("/download", methods=['GET'])
+@app.route("/download", methods=['POST'])
 def download():
-    name = request.args.get("name")
+    content = request.get_json(silent=True)
+    name = content["name"]
     out = db.getTorrent(name)
     data = {}
     data["data"] = out
     data["peers"] = db.getPerrs(name)
     return jsonify(data)
+
+@app.route("/peer", methods=['POST'])
+def peer():
+    content = request.get_json(silent=True)
+    name = content["name"]
+    ip = content["ip"]
+    db.addPeer(ip, peer)
+    return jsonify({"code" : 1})
 
 if __name__ == '__main__': 
     app.debug = True
