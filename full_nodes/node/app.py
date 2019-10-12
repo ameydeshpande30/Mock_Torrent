@@ -78,7 +78,7 @@ def peer():
     content = request.get_json(silent=True)
     name = content["name"]
     ip = content["ip"]
-    db.addPeer(ip, peer)
+    db.addPeer(ip, name)
     syncAllPeer(name, ip)
     return jsonify({"code" : 1})
 
