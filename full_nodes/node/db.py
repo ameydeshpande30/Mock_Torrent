@@ -2,8 +2,8 @@ from peewee import *
 import datetime
 
 
+# db = SqliteDatabase('torrent.db')
 db = SqliteDatabase('torrent.db')
-
 class BaseModel(Model):
     class Meta:
         database = db
@@ -19,6 +19,7 @@ class Peer(BaseModel):
     id = PrimaryKeyField(AutoField)
     name = CharField(max_length=150)
     ip = CharField(max_length=150)
+
 
 db.connect()
 db.create_tables([Torrent, Peer])

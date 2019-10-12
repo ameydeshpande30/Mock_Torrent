@@ -1,3 +1,5 @@
 peewee
 Flask
 requests
+asyncio
+argparse
