@@ -18,7 +18,7 @@ def make_directories(fname):
 
 
 def thread_download(ip, fname, part):
-    print("Downloading part----->{}from peer----->{}".format(part,ip))
+    print("Downloading part----->{} from peer----->{}".format(part,ip))
     url = "http://" + ip + '/downloadpart'
     data = {"name":fname.split('.')[0],"part":part}
     r = requests.post(url, json=data)
