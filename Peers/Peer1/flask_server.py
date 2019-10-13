@@ -1,0 +1,55 @@
+from flask import Flask, request
+from flask import send_file
+from flask import jsonify
+import os
+app = Flask(__name__)
+root_path = os.path.abspath(os.path.dirname(__file__))
+
+
+    
+'''
+
+=====================================================================================
+                        Api's start here
+=====================================================================================
+
+'''
+
+
+@app.route("/fileinfo", methods=['POST'])
+def peer():
+
+    content = request.get_json(silent=True)
+    path = root_path + '/static/Torrents/'+ content["name"]
+    parts = os.listdir(path)
+    print(parts)
+
+    if len(parts)!= 0:
+        data = {"parts":parts,"code":1}
+    else:
+        data = {"code":0}
+    return jsonify(data)
+
+
+@app.route("/downloadpart", methods=['POST'])
+def download():
+    content = request.get_json(silent=True)
+    name = content["name"]
+    part = content["part"]
+    path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + name + "/" + part
+    print(path)
+#'/home/blazehunter/College/SEM7/LP-2/DS/Test_File_Exchange/static/Torrrent/dummy1/1.txt'
+    return send_file(path, attachment_filename = part)
+
+
+
+
+'''
+=====================================================================================
+'''
+
+def start_server(port):
+    app.debug = False
+    app.run(port=port) 
+    print("Flask Server started")
+    

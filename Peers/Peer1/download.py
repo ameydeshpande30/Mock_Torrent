@@ -1,58 +1,58 @@
 import requests
+import os
+import threading
+import global_vars as gvs
+import split_and_join as sj
+import getpass
+
+root_path = os.path.abspath(os.path.dirname(__file__))
 
 
-def get_peers(ip, fullnodes, fname):
-    for i in fullnodes:
-        i1 = "http://" + i + '/download'
-        data = {"name":fname}
-        r = requests.post(i1,json=data)
-        
-        print(r.json())
+def make_directories(fname):
+    fname = fname.split('.')[0]
+    path = root_path + '/static/Temp/' + fname      
+    os.mkdir(path)                                      #make directory in temp folder
 
-        #Adding peer to network of torrent
-        if r.status_code == 200:
-            i1 = "http://" + i + '/peer'
-            datap = {"name":fname,"ip":ip}
-            r = requests.post(i1,json=datap)
-            return r,1 
-    else:
-        print("File does note exist in the network")
-        return "Error", 0
+    path1 = root_path + '/static/Torrents/' + fname      
+    os.mkdir(path1)                                      #make directory in Torrent folder
 
 
-def process_peers(r, fname):
+def thread_download(ip, fname, part):
+    print("Downloading part----->", part)
+    url = "http://" + ip + '/downloadpart'
+    data = {"name":fname.split('.')[0],"part":part}
+    r = requests.post(url, json=data)
+    print(r.status_code)
 
-    phash = {}
-    pinfo = {}
-    pweight = {}
-    counter = 1
-    for i in r["peers"]:
-        phash[counter] = i
-        i1 = "http://" + i + "/fileinfo"
-        data = {"name":fname}
-        r = requests.post(i1,json=data)
-        r = r.json()
-        if r["code"] == 1:
-            print("r in download ")
-            print(r)
-            pweight[counter] = len(r["parts"])
+    source_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Temp/" + fname.split('.')[0] + "/" + part
+    with open(source_path, 'wb') as f:
+        f.write(r.content)
 
-            for j in r["parts"]:
-                if pinfo[j] in pinfo.keys():
-                    pinfo[j].append(counter)
-                else:
-                    pinfo[j] = [counter]
-            counter += 1
-    print(phash)
-    print(pinfo)
-    print(pweight)
+    destination_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0] + "/" + part
+    os.rename(source_path, destination_path)
 
-def start_download(ip, fullnodes, fname):
 
-    r,status = get_peers(ip, fullnodes, fname)
-    print("r->{} , status->{}".format(r,status))
-    if(status == 1):
-        print(status)
-        process_peers(r,fname)
-    else:
-        return
+def start_download(phash, pinfo, pweight, fname):
+
+    make_directories(fname)
+    for part, peers in pinfo.items():
+        min1 = 90000000000
+        rpeer = -1
+        for i in peers:
+            if pweight[i] < min1:
+                rpeer = i
+                min1 = pweight[i]
+        ip = phash[rpeer]
+        t = threading.Thread(target=thread_download, args=(ip, fname, part))
+        t.start()
+        pweight[rpeer] += 1
+
+    destination = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0]
+    while True:
+        if len(os.listdir(destination)) == len(pinfo.keys()):
+
+            folder_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0]
+            outputdir_path = '/home/' + getpass.getuser() + '/Downloads'
+            sj.joinFile(folder_path, len(pinfo.values()), fname.split('.')[1], outputdir_path)
+            print("File Downloaded successfully")
+            break

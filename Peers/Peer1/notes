@@ -1,3 +1,0 @@
-At the start only one peer had complete file which could be hosted.
-As soon as a peer downloads a complete they should add a torrent,that now they are completely able to host that file until then they are just a part of
-torrent network of file where current peer has parts of file.

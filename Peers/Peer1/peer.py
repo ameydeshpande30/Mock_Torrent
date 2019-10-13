@@ -4,23 +4,33 @@ import requests
 import os
 import json
 import hashlib
-import download as dl
+import threading
+import peer_processing as pp
 import split_and_join as sj
+import global_vars as gvs
+
 app = Flask(__name__)
 
 root_path = os.path.abspath(os.path.dirname(__file__))
 
 
 filemap = {}
-fullnodes = []
 ip = '127.0.0.1:8001'
 port = 8001
+fullnodes = []
+#fname in all files represent the complete file name with extension
 
+'''
+To-do
+
+exception handling for already existing folders
+'''
 def connect_to_fullnodes():
     global fullnodes
     with open('network.json', 'r') as jf:
         data = json.load(jf)
-        fullnodes = [f for f in data]
+        for f in data:
+            fullnodes.append(f)
         print(fullnodes)
 
 def addtorrent():
@@ -42,54 +52,30 @@ def addtorrent():
         #print(i1)
         r = requests.post(i1,json=data)
         if r.status_code == 200:
-            print("Torrrent Added successfully")
+            print("Torrent Added successfully")
             break
         else:
             print("Problem occurred while adding torrent")
+    
+    print(filemap)
 
 def download_file():
 
     global ip
 
     fname = input("Enter the name of the file:")
-    dl.start_download(ip, fullnodes, fname)
-
-    
-'''
-
-=====================================================================================
-                        Api's start here
-=====================================================================================
-
-'''
+    pp.start_processing(ip, fullnodes, fname)
 
 
-@app.route("/fileinfo", methods=['POST'])
-def peer():
-
-    global filemap
-    content = request.get_json(silent=True)
-    if content["name"] in filemap.keys():
-        data = {"parts":filemap[content["name"]],"code":1}
-    else:
-        data = {"code":0}
-    return jsonify(data)
-
-
-
-
-
-
-'''
-=====================================================================================
-'''
 if __name__ == '__main__': 
 
-    connect_to_fullnodes()
-    addtorrent()
-    app.debug = False
-    app.run(port=port) 
 
+    connect_to_fullnodes()
+
+    import flask_server
+    t1 = threading.Thread(target=flask_server.start_server, args=(port,))
+
+    t1.start()
 
     while True:
         print("\n1.)Add Torrent")

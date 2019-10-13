@@ -3,7 +3,6 @@ from flask import Flask, request
 from flask import jsonify
 import asyncio, requests
 import argparse
-
 parser = argparse.ArgumentParser(description='Optional app description')
 parser.add_argument('port', type=int, help='Port To Run The Server')
 args = parser.parse_args()
@@ -50,7 +49,8 @@ def ntorrent():
     parts = content["parts"]
     file_hash = content["fileHash"]
     ip = content["ip"]
-    db.addData(name, parts, file_hash, ip)
+    ext = content["ext"]
+    db.addData(name, parts, file_hash, ext, ip)
     return jsonify({"code" : 200})
 
 @app.route("/torrent", methods=['POST'])
@@ -60,7 +60,8 @@ def torrent():
     parts = content["parts"]
     file_hash = content["fileHash"]
     ip = content["ip"]
-    db.addData(name, parts, file_hash, ip)
+    ext = content["ext"]
+    db.addData(name, parts, file_hash, ext, ip)
     syncAllTorrent(name, parts, file_hash, ip)
     return jsonify({"code" : 200})
 

@@ -4,98 +4,78 @@ import requests
 import os
 import json
 import hashlib
-import download as dl
+import threading
+import peer_processing as pp
+import split_and_join as sj
+import global_vars as gvs
 
 app = Flask(__name__)
 
+root_path = os.path.abspath(os.path.dirname(__file__))
+
 
 filemap = {}
-fullnodes = []
 ip = '127.0.0.1:8002'
 port = 8002
+fullnodes = []
+#fname in all files represent the complete file name with extension
 
+'''
+To-do
+
+exception handling for already existing folders
+'''
 def connect_to_fullnodes():
     global fullnodes
     with open('network.json', 'r') as jf:
         data = json.load(jf)
-        fullnodes = [f for f in data]
+        for f in data:
+            fullnodes.append(f)
         print(fullnodes)
 
 def addtorrent():
     global ip
     global filemap
 
-    while True:
-        my_path = os.path.abspath(os.path.dirname(__file__))
-        folname = input("Enter folder name:")
-        path = os.path.join(my_path,folname)
-        print(path)
-        if os.path.isdir(path):
-            names = []
-            for file in os.listdir(folname):
-                if file.endswith(".txt") and file!="main.txt":
-                    names.append(file) #to-do
+    file_path = input("Enter complete file path:")
+    folname = file_path.split('/')[-1]
+    directory_path = root_path + "/static/Torrents/"
+    filehash, names, ext = sj.splitFile(file_path, directory_path)
+    print(len(names))
+    print(names)
 
-            filemap[folname] = names
-            fhash = str(hashlib.md5(open(path+'/main.txt','rb').read()).hexdigest())
-            data = {"name":folname,"parts":len(names)-1,"fileHash":fhash,"ip":ip}
-            print(data)
-            for i in fullnodes:
-                i1 = "http://" + i + '/torrent'
-                #print(i1)
-                r = requests.post(i1,json=data)
-                if r.status_code == 200:
-                    print("Torrrent Added successfully")
-                    break
-            #print(filemap)
+    filemap[folname] = names
+    data = {"name":folname,"parts":len(names),"fileHash":filehash,"ip":ip,"ext":ext}
+
+    for i in fullnodes:
+        i1 = "http://" + i + '/torrent'
+        #print(i1)
+        r = requests.post(i1,json=data)
+        if r.status_code == 200:
+            print("Torrent Added successfully")
             break
         else:
-            print("Folder does not exist")
-            return 
-
+            print("Problem occurred while adding torrent")
+    
+    print(filemap)
 
 def download_file():
 
     global ip
 
     fname = input("Enter the name of the file:")
-    dl.start_download(ip, fullnodes, fname)
-
-    
-'''
-
-=====================================================================================
-                        Api's start here
-=====================================================================================
-
-'''
+    pp.start_processing(ip, fullnodes, fname)
 
 
-# @app.route("/fileinfo", methods=['POST'])
-# def peer():
-
-#     global filemap
-#     content = request.get_json(silent=True)
-#     if content["name"] in filemap.keys():
-#         data = {"parts":filemap[content["name"]],"code":1}
-#     else:
-#         data = {"code":0}
-#     return jsonify(data)
-
-
-
-
-
-
-'''
-=====================================================================================
-'''
 if __name__ == '__main__': 
 
-    # app.debug = True
-    # app.run(port=port) 
 
     connect_to_fullnodes()
+
+    import flask_server
+    t1 = threading.Thread(target=flask_server.start_server, args=(port,))
+
+    t1.start()
 
     while True:
         print("\n1.)Add Torrent")
