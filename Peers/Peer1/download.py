@@ -7,6 +7,19 @@ import getpass
 
 root_path = os.path.abspath(os.path.dirname(__file__))
 
+try:
+    path = root_path + '/static/Temp'   
+    os.mkdir(path)
+except:
+    pass
+
+try:
+    path = root_path + '/static/Torrents'   
+    os.mkdir(path)
+except:
+    pass
+
+
 
 def make_directories(fname):
     fname = fname.split('.')[0]
