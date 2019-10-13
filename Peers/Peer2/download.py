@@ -52,7 +52,12 @@ def start_download(phash, pinfo, pweight, fname):
         if len(os.listdir(destination)) == len(pinfo.keys()):
 
             folder_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0]
-            outputdir_path = '/home/' + getpass.getuser() + '/Downloads'
+            # outputdir_path = '/home/' + getpass.getuser() + '/Downloads'
+            outputdir_path = "Downloads"
+            try : 
+                os.mkdir(outputdir_path)
+            except:
+                pass
             sj.joinFile(folder_path, len(pinfo.values()), fname.split('.')[1], outputdir_path)
             print("File Downloaded successfully")
             break

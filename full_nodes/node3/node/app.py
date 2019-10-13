@@ -18,8 +18,8 @@ def hello_world():
     return jsonify(d)
 
 # @asyncio.coroutine
-def syncAllTorrent(name, parts, filehash, ip):
-    data = {"name":name,"parts":parts,"fileHash":filehash,"ip":ip}
+def syncAllTorrent(name, parts, filehash, ip, ext):
+    data = {"name":name,"parts":parts,"fileHash":filehash,"ip":ip, "ext": ext}
     for i in other_fulll_nodes:
         i1 = "http://" + i + '/ntorrent'
         r = requests.post(i1,json=data)
@@ -62,7 +62,7 @@ def torrent():
     ip = content["ip"]
     ext = content["ext"]
     db.addData(name, parts, file_hash, ext, ip)
-    syncAllTorrent(name, parts, file_hash, ip)
+    syncAllTorrent(name, parts, file_hash, ip, ext)
     return jsonify({"code" : 200})
 
 @app.route("/download", methods=['POST'])
@@ -93,5 +93,5 @@ def npeer():
     return jsonify({"code" : 1})
 
 if __name__ == '__main__': 
-    app.debug = True
+    app.debug = False
     app.run(port=port) 

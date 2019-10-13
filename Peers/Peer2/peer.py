@@ -15,8 +15,8 @@ root_path = os.path.abspath(os.path.dirname(__file__))
 
 
 filemap = {}
-ip = '127.0.0.1:8002'
-port = 8002
+ip = '127.0.0.1:8001'
+port = 8001
 fullnodes = []
 #fname in all files represent the complete file name with extension
 
@@ -39,7 +39,7 @@ def addtorrent():
 
     file_path = input("Enter complete file path:")
     folname = file_path.split('/')[-1]
-    directory_path = root_path + "/static/Torrents/"
+    directory_path = root_path + "/static/Torrents"
     filehash, names, ext = sj.splitFile(file_path, directory_path)
     print(len(names))
     print(names)
