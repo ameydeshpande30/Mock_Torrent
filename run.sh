@@ -23,6 +23,7 @@ cd ..
 cd Peers
 for i in 1 2 3
 do
+	rm -rf Peer$i
 	cp -R Peer Peer$i
 done
 cd ..

@@ -50,6 +50,6 @@ def download():
 
 def start_server(port):
     app.debug = False
-    app.run(port=port) 
+    app.run(port=port,host= '0.0.0.0') 
     print("Flask Server started")
     
