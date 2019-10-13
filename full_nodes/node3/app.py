@@ -94,4 +94,4 @@ def npeer():
 
 if __name__ == '__main__': 
     app.debug = False
-    app.run(port=port) 
+    app.run(port=port, host= '0.0.0.0') 
