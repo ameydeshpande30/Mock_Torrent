@@ -21,9 +21,10 @@ def peer():
 
     content = request.get_json(silent=True)
     path = root_path + '/static/Torrents/'+ content["name"]
-    parts = os.listdir(path)
-    print(parts)
-
+    try:
+        parts = os.listdir(path)
+    except:
+        parts = []
     if len(parts)!= 0:
         data = {"parts":parts,"code":1}
     else:
