@@ -8,7 +8,6 @@ from termcolor import colored
   
 
   
-print(colored('Hello, World!', 'green', 'on_red')) 
 root_path = os.path.abspath(os.path.dirname(__file__))
 
 

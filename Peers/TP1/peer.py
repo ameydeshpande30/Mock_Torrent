@@ -8,6 +8,7 @@ import threading
 import peer_processing as pp
 import split_and_join as sj
 import global_vars as gvs
+import time
 
 app = Flask(__name__)
 
@@ -62,9 +63,14 @@ def addtorrent():
 def download_file():
 
     global ip
+    
+    start = time.time()
 
     fname = input("Enter the name of the file:")
     pp.start_processing(ip, fullnodes, fname)
+
+    end = time.time()
+    print(end - start)
 
 
 if __name__ == '__main__': 
