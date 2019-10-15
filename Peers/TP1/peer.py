@@ -70,7 +70,7 @@ def download_file():
     pp.start_processing(ip, fullnodes, fname)
 
     end = time.time()
-    print(end - start)
+    print("Seconds consumed->{}".format(end - start))
 
 
 if __name__ == '__main__': 

@@ -25,8 +25,8 @@ def thread_download(ip, fname, part):
     url = "http://" + ip + '/downloadpart'
     data = {"name":fname.split('.')[0],"part":part}
     r = requests.post(url, json=data)
-    print(r.status_code)
-    print(colored("Part {} done ".format(part)),'green')
+    pp = str(r.status_code) + " Part----->"+part+"    Done"
+    print(colored(pp,'green'))
 
     source_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Temp/" + fname.split('.')[0] + "/" + part
     with open(source_path, 'wb') as f:
