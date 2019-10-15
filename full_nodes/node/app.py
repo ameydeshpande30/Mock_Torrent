@@ -56,6 +56,7 @@ def ntorrent():
 @app.route("/torrent", methods=['POST'])
 def torrent():
     content = request.get_json(silent=True)
+    print(content)
     name = content["name"]
     parts = content["parts"]
     file_hash = content["fileHash"]

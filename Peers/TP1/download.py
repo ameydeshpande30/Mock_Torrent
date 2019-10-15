@@ -4,7 +4,11 @@ import threading
 import global_vars as gvs
 import split_and_join as sj
 import getpass
+from termcolor import colored 
+  
 
+  
+print(colored('Hello, World!', 'green', 'on_red')) 
 root_path = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -18,12 +22,12 @@ def make_directories(fname):
 
 
 def thread_download(ip, fname, part):
-    print("Downloading part----->{}from peer----->{}".format(part,ip))
+    print("Downloading part----->{} from peer----->{}".format(part,ip))
     url = "http://" + ip + '/downloadpart'
     data = {"name":fname.split('.')[0],"part":part}
     r = requests.post(url, json=data)
     print(r.status_code)
-    print("Part {} done ".format(part))
+    print(colored("Part {} done ".format(part)),'green')
 
     source_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Temp/" + fname.split('.')[0] + "/" + part
     with open(source_path, 'wb') as f:
