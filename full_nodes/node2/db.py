@@ -15,6 +15,7 @@ class Torrent(BaseModel):
     parts = IntegerField(default=5)
     ext = CharField(max_length=10)
     file_hash = CharField(max_length=100)
+    key = CharField(max_length=20)
 
 class Peer(BaseModel):
     id = PrimaryKeyField(AutoField)
@@ -25,8 +26,8 @@ class Peer(BaseModel):
 db.connect()
 db.create_tables([Torrent, Peer])
 
-def addData(name, parts, file_hash, ext, ip):
-    Torrent.create(name=name, parts=parts, file_hash=file_hash, ext=ext)
+def addData(name, parts, file_hash, ext, ip, key):
+    Torrent.create(name=name, parts=parts, file_hash=file_hash, ext=ext, key=key)
     db.commit()
     addPeer(ip, name)
 
@@ -40,6 +41,7 @@ def getTorrent(name):
     data["name"] = out.name
     data["file_hash"] = out.file_hash
     data["parts"] = out.parts
+    data["key"] = out.key
     return(data)
 
 def getPerrs(name):

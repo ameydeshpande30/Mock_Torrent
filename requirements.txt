@@ -4,4 +4,4 @@ requests
 asyncio
 argparse
 termcolor
-tkinter
+pyAesCrypt
