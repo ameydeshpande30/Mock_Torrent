@@ -1,0 +1,8 @@
+ performs the necessary actions and sends it back to your phone. 
+The application then interprets that data and presents you with the information you wanted in a readable way. 
+This is what an API is - all of this happens via API.
+Each time you use an app like Facebook, send an instant message, or check the weather on your phone, you’re using an API.
+Imagine you’re sitting at a table in a restaurant with a menu of choices to order from.
+The kitchen is the part of the “system” that will prepare your order. 
+What is missing is the critical link to communicate your order to the kitchen and deliver your food back to your table. 
+That’s where the waiter or API comes in. The waiter is the messenger – or API – that takes your request or order and tells the kitch
