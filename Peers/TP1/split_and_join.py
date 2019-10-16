@@ -1,6 +1,8 @@
 import os
 import hashlib
 import random
+from termcolor import colored 
+
 def getHash(file):
     BLOCKSIZE = 65536
     hasher = hashlib.md5()
@@ -71,9 +73,9 @@ def joinFile(folderPath, parts, ext, outputLoc, filehash):
     outputFile.write(output)
     originalHash = getHash(lastLoc)
     if originalHash == filehash:
-        print("File Integrity is correct")
+        print(colored(u'\u2714', 'green') + " File Integrity is correct")
     else:
-        print("File is courpted")
+        print(colored(u'\u274c', 'red') + " File is corrupt")
     return 0
 
 # joinFile("output/eastside", 21, "mp3" , "test")

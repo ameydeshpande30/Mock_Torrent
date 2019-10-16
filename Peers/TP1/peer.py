@@ -16,8 +16,8 @@ root_path = os.path.abspath(os.path.dirname(__file__))
 
 
 filemap = {}
-ip = '192.168.0.111:8001'
-port = 8001
+ip = '127.0.0.1:8002'
+port = 8002
 fullnodes = []
 #fname in all files represent the complete file name with extension
 
