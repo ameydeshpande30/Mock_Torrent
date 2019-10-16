@@ -55,6 +55,7 @@ def start_download(phash, pinfo, pweight, fname, response):
     while True:
         if len(os.listdir(destination)) == len(pinfo.keys()):
 
+            print("===========================================================================================")
             folder_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0]
             # outputdir_path = '/home/' + getpass.getuser() + '/Downloads'
             outputdir_path = "Downloads"

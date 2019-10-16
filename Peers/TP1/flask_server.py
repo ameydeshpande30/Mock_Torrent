@@ -39,7 +39,6 @@ def download():
     part = content["part"]
     path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + name + "/" + part
     print(path)
-#'/home/blazehunter/College/SEM7/LP-2/DS/Test_File_Exchange/static/Torrrent/dummy1/1.txt'
     return send_file(path, attachment_filename = part)
 
 
@@ -53,4 +52,6 @@ def start_server(port):
     app.debug = False
     app.run(port=port,host= '0.0.0.0') 
     print("Flask Server started")
-    
+
+import sys
+start_server(int(sys.argv[1]))
