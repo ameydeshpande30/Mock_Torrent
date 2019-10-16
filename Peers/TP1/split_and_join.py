@@ -1,6 +1,6 @@
 import os
 import hashlib
-
+import random
 def getHash(file):
     BLOCKSIZE = 65536
     hasher = hashlib.md5()
@@ -25,9 +25,10 @@ def div_ratio(size):
 def makeParts(outputDir, filePath, ChukSize, name, ext):
     flag = 1
     names = []
+    randomizer = int(ChukSize*0.1)
     with open(filePath, "rb") as f:
         while True:
-            data = f.read(ChukSize)
+            data = f.read(ChukSize + random.randint(-randomizer, randomizer))
             if not data:
                 break
             out = open(outputDir  + "/" + name + str(flag) + "." + ext + ".part", "wb")
@@ -58,7 +59,7 @@ def splitFile(fileCompletePath, outputDir):
 
 # splitFile("input/eastside.mp3", "output")
 
-def joinFile(folderPath, parts, ext, outputLoc):
+def joinFile(folderPath, parts, ext, outputLoc, filehash):
     name = folderPath.split("/")[-1]
     fileT  = open(folderPath + "/" + name + "1."  + ext + ".part", "rb")
     output = fileT.read()
@@ -68,6 +69,11 @@ def joinFile(folderPath, parts, ext, outputLoc):
     lastLoc = outputLoc + "/" + name + "." + ext
     outputFile = open(lastLoc, "wb")
     outputFile.write(output)
+    originalHash = getHash(lastLoc)
+    if originalHash == filehash:
+        print("File Integrity is correct")
+    else:
+        print("File is courpted")
     return 0
 
 # joinFile("output/eastside", 21, "mp3" , "test")
