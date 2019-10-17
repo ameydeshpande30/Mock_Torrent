@@ -1,8 +1,10 @@
 import os
 import hashlib
 import random, string
+
 from termcolor import colored 
-import secureED as sed
+
+import support.secureED as sed
 
 def getHash(file):
     BLOCKSIZE = 65536

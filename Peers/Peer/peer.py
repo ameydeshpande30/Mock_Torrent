@@ -1,18 +1,21 @@
-from flask import Flask, request
-from flask import jsonify
-from tkinter import filedialog
 import requests
 import os
 import json
 import hashlib
 import threading
-import peer_processing as pp
-import split_and_join as sj
-import global_vars as gvs
 import time
 import tkinter
 import socket
 import sys
+import shutil
+
+from flask import Flask, request
+from flask import jsonify
+from tkinter import filedialog
+
+from support.peer_processing import start_processing
+from support.split_and_join import splitFile
+
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -59,14 +62,20 @@ def addtorrent():
         
     file_path, s = get_file_path()
     if s:
-        folname = file_path.split('/')[-1]
-        directory_path = root_path + "/static/Torrents"     #Add try catch over here
-        filehash, names, ext, key = sj.splitFile(file_path, directory_path)
+        fname = file_path.split('/')[-1]
+        directory_path = root_path + "/static/Torrents"     #Add try catch over here,also if previous folder exists with the same name then file can't be added
+        if os.path.exists(directory_path+'/'+ fname.split('.')[0]):
+            print("Torrent File  Already exists")
+            return
+        filehash, names, ext, key = splitFile(file_path, directory_path)
+        
+        
+        print("************************************************")
         print(len(names))
         print(names)
 
-        filemap[folname] = names
-        data = {"name":folname,"parts":len(names),"fileHash":filehash,"ip":ip,"ext":ext, "key" : key}
+        filemap[fname] = names
+        data = {"name":fname,"parts":len(names),"fileHash":filehash,"ip":ip,"ext":ext, "key" : key}
 
         for i in fullnodes:
             i1 = "http://" + i + '/torrent'
@@ -77,6 +86,7 @@ def addtorrent():
                 break
             else:
                 print("Problem occurred while adding torrent")
+        print("************************************************")
     else:
         return 
 
@@ -90,7 +100,15 @@ def download_file():
     start = time.time()
 
     fname = input("Enter the name of the file:")
-    pp.start_processing(ip, fullnodes, fname)
+    try:
+        os.remove(root_path + '/Downloads/' + fname)         #removing previous file with the same name
+        shutil.rmtree(root_path + '/static/Temp/' + fname.split('.')[0])
+        print("did")
+        shutil.rmtree(root_path + '/static/Torrents/' + fname.split('.')[0])
+    except:
+        pass
+    
+    start_processing(ip, fullnodes, fname)
 
     end = time.time()
     print("Seconds consumed->{}".format(end - start))
@@ -101,10 +119,14 @@ if __name__ == '__main__':
 
 
     connect_to_fullnodes()
+    try:
+        os.mkdir(root_path + '/static')
+        os.mkdir(root_path + '/static/Temp')
+        os.mkdir(root_path + '/static/Torrents')
+    except:
+        pass
 
-    # import flask_server
-    # # t1 = threading.Thread(target=flask_server.start_server, args=(port,))
-    # # t1.start()
+
     string1 = "python3 flask_server.py " + port
     string2 = "gnome-terminal -e '" + string1 +"'"
     os.system(string2)

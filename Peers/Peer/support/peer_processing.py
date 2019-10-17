@@ -1,6 +1,7 @@
 import requests
 import json
-import download as dl
+
+from support.download import start_download
 
 def get_peers(ip, fullnodes, fname):
     for i in fullnodes:
@@ -24,13 +25,12 @@ def get_peers(ip, fullnodes, fname):
 def process_peers(response, fname):
 
     phash = {}
-    pinfo = {}
+    part_info = {}
     pweight = {}
     counter = 1
     fname = fname.split('.')[0]
     
     for i in response["peers"]:
-        
         phash[counter] = i
         i1 = "http://" + i + "/fileinfo"
         data = {"name":fname}
@@ -43,17 +43,17 @@ def process_peers(response, fname):
                 pweight[counter] = len(r["parts"])
 
                 for j in r["parts"]:
-                    if j in pinfo.keys():
-                        pinfo[j].append(counter)
+                    if j in part_info.keys():
+                        part_info[j].append(counter)
                     else:
-                        pinfo[j] = [counter]
+                        part_info[j] = [counter]
                 counter += 1
         except:
             pass
     print(phash)
-    print(pinfo)
+    print(part_info)
     print(pweight)
-    return phash, pinfo, pweight
+    return phash, part_info, pweight
 
 def start_processing(ip, fullnodes, fname):
 
@@ -61,7 +61,7 @@ def start_processing(ip, fullnodes, fname):
     print("r->{} , status->{}".format(response,status))
     if(status == 1):
         print(status)
-        phash, pinfo, pweight = process_peers(response.json(),fname)
-        dl.start_download(phash, pinfo, pweight, fname ,response.json())
+        phash, part_info, pweight = process_peers(response.json(),fname)
+        start_download(phash, part_info, pweight, fname ,response.json())
     else:
         return

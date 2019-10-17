@@ -27,5 +27,11 @@
 #     s.close()
 # return IP 
 
-import sys
-print(type(sys.argv[1]))
+# import sys
+# print(type(sys.argv[1]))
+import os
+import shutil
+root_path = os.path.abspath(os.path.dirname(__file__))
+path = root_path + '/static/Temp/' + 'fname'   
+
+shutil.rmtree(root_path + '/t')
