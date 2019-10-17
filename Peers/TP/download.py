@@ -55,7 +55,7 @@ def start_download(phash, pinfo, pweight, fname, response):
     while True:
         if len(os.listdir(destination)) == len(pinfo.keys()):
 
-            print("===========================================================================================")
+            print("===============================================================")
             folder_path = os.path.abspath(os.path.dirname(__file__)) + "/static/Torrents/" + fname.split('.')[0]
             # outputdir_path = '/home/' + getpass.getuser() + '/Downloads'
             outputdir_path = "Downloads"
@@ -64,5 +64,5 @@ def start_download(phash, pinfo, pweight, fname, response):
             except:
                 pass
             sj.joinFile(folder_path, len(pinfo.values()), fname.split('.')[1], outputdir_path, response['data']['file_hash'], response['data']['key'])
-            print("File Downloaded successfully")
+            print(colored(u'\u2714', 'green')+"File Downloaded successfully")
             break
