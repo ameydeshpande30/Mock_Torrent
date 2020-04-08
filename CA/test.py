@@ -28,11 +28,13 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import base64
 def getNumber(private_key_path, ciperText):
+    cp = base64.decodebytes(ciperText.encode())
     pr_key = RSA.importKey(open(private_key_path, 'r').read())
     de = PKCS1_OAEP.new(key=pr_key)
-    return de.decrypt(ciperText)
+    return de.decrypt(cp)
 
 
+print(getNumber("pub/private_pem.pem", "d2fuIsy3nmT7uQxjAfIszxOMkV7LBi6X0mChPVCnD/8jT0z1Gl8w2ZXKxdleC84dpRHh+FF6QOTTuu4AKJiNp7+SBWjhZ3uzCWEKr6Tjsowg2UiVhmowZFFvNIzLkEKNEagb0VR099A2N3lHRgjZ26QBGHfjHBiflfaNmK9MgUk="))
 
 import jwt
 def jwtVerify(token):

@@ -16,6 +16,7 @@ JWT_EXP_DELTA_SECONDS = 20000000
 private_key = open('JWT.pem').read()
 key = "J:8kM~_@,8R-M=&[#H~vquxe9Bt;8Aw3MJRj3s#W"
 
+data = {}
 
 def createJWT(uid):
     payload = {'user_id': uid,'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)}
@@ -24,12 +25,13 @@ def createJWT(uid):
 
 @app.route("/challenge", methods=['POST'])
 def challange():
+    global data
     content = request.get_json(silent=True)
     uid = content["uid"]
     out = {}
     out["uid"] = uid
     num = random.randint(a=100,b=1000000)
-    
+    data[uid] = num
     h = SHA512.new()
     pb_key = RSA.importKey(open('pub/' + str(uid) + '.pub', 'r').read())
     cipher = PKCS1_OAEP.new(key=pb_key)
@@ -38,11 +40,13 @@ def challange():
     ss= ss.encode('utf-8')
     h.update(ss)
     out["hash512"] = str(h.hexdigest())
+    print(data)
     return jsonify(out)
 
 
 @app.route("/authenticate", methods=['POST'])
 def check():
+    global data
     content = request.get_json(silent=True)
     uid = content["uid"]
     number = content["number"]
@@ -52,8 +56,18 @@ def check():
     h = SHA512.new()
     h.update(ss)
     checkHash = str(h.hexdigest())
-    if checkHash == hash512:
-        return jsonify({"code": "1", "token": createJWT(uid)})
+    if checkHash == hash512 :
+        print(data)
+        try:
+            num = str(data[uid])
+            if num == number:
+                del data[uid]
+                return jsonify({"code": "1", "token": createJWT(uid)})
+            else:
+                return jsonify({"error": "bad request"})
+                    
+        except:
+            return jsonify({"error": "bad request"})
   
     else:
         return jsonify({"error": "bad request"})
