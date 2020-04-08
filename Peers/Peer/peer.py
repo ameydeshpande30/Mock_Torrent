@@ -15,7 +15,8 @@ from tkinter import filedialog
 
 from support.peer_processing import start_processing
 from support.split_and_join import splitFile
-
+from Authenticate.Authentication import getEnrolled
+from Authenticate.Authentication import authenticate
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -36,10 +37,16 @@ fullnodes = []
 root_path = os.path.abspath(os.path.dirname(__file__))
 #================================================================================================================================
 
+def getLoginDetails():
+    with open('network.json', 'r') as jf:
+        data = json.load(jf)
+        return data['uid'], data['public_key'], data['private_key']
+
 def connect_to_fullnodes():
     global fullnodes
     with open('network.json', 'r') as jf:
         data = json.load(jf)
+        data = data['fullNodes']
         for f in data:
             fullnodes.append(f)
         print(fullnodes)
@@ -48,7 +55,6 @@ def get_file_path():
     root = tkinter.Tk()
     root.withdraw()
     path = None
-    s = None
     path = filedialog.askopenfilename(parent=root, initialdir=os.path.expanduser('~'), title='Please select a file')
     if len(path) == 0:
         print("File not selected properly")
@@ -65,7 +71,7 @@ def addtorrent():
         fname = file_path.split('/')[-1]
         directory_path = root_path + "/static/Torrents"     #Add try catch over here,also if previous folder exists with the same name then file can't be added
         if os.path.exists(directory_path+'/'+ fname.split('.')[0]):
-            print("Torrent File  Already exists")
+            print("Torrent File Already exists")
             return
         filehash, names, ext, key = splitFile(file_path, directory_path)
         
@@ -93,7 +99,7 @@ def addtorrent():
     
     # print(filemap)
 
-def download_file():
+def download_file(token):
 
     global ip
     
@@ -108,7 +114,7 @@ def download_file():
     except:
         pass
     
-    start_processing(ip, fullnodes, fname)
+    start_processing(ip, token, fullnodes, fname)
 
     end = time.time()
     print("Seconds consumed->{}".format(end - start))
@@ -131,15 +137,23 @@ if __name__ == '__main__':
     string2 = "gnome-terminal -e '" + string1 +"'"
     os.system(string2)
 
-    while True:
-        print("\n1.)Add Torrent")
-        print("2.)Download File")
-        print("3.)Exit")
-        choice = int(input("Enter your choice:"))
+    uid, public_key, private_key = getLoginDetails()
+    numberHash, hash512 = getEnrolled(uid)
+    status = authenticate(uid, public_key, private_key, numberHash, hash512)
 
-        if choice == 1:
-            addtorrent()
-        elif choice==2:
-            download_file()
-        else:
-            break
+    if not status:
+
+        while True:
+            print("\n1.)Add Torrent")
+            print("2.)Download File")
+            print("3.)Exit")
+            choice = int(input("Enter your choice:"))
+
+            if choice == 1:
+                addtorrent()
+            elif choice==2:
+                download_file(status)
+            else:
+                break
+    else:
+        print("An error occurred during authentication")
