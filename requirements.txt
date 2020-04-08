@@ -5,3 +5,6 @@ asyncio
 argparse
 termcolor
 pyAesCrypt
+jwt
+pybase64
+Crypto
