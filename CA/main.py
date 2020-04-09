@@ -73,4 +73,4 @@ def check():
         return jsonify({"error": "bad request"})
 
 
-app.run(port=5006, debug=True)
+app.run(port=5006, debug=False)
