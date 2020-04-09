@@ -10,6 +10,18 @@ port = args.port
 # db.init(str(port))
 app = Flask(__name__)
 other_fulll_nodes = []
+
+
+import jwt
+def jwtVerify(token):
+    public_key = open('JWT.pub').read()
+    try:
+        payload = jwt.decode(token, public_key, algorithms=['RS256'])
+        payload = payload["uid"]
+    except:
+        payload = -1
+    return payload
+
 @app.route("/")
 def hello_world(): 
     d = {
@@ -57,6 +69,9 @@ def ntorrent():
 @app.route("/torrent", methods=['POST'])
 def torrent():
     content = request.get_json(silent=True)
+    payload = jwtVerify(request.headers.get("token"))
+    if payload != -1:
+        return jsonify({"code" : 2 })
     print(content)
     name = content["name"]
     parts = content["parts"]
@@ -71,6 +86,9 @@ def torrent():
 @app.route("/download", methods=['POST'])
 def download():
     content = request.get_json(silent=True)
+    payload = jwtVerify(request.headers.get("token"))
+    if payload != -1:
+        return jsonify({"code" : 2 })
     name = content["name"]
     out = db.getTorrent(name)
     data = {}
@@ -81,6 +99,9 @@ def download():
 @app.route("/peer", methods=['POST'])
 def peer():
     content = request.get_json(silent=True)
+    payload = jwtVerify(request.headers.get("token"))
+    if payload != -1:
+        return jsonify({"code" : 2 })
     name = content["name"]
     ip = content["ip"]
     db.addPeer(ip, name)
