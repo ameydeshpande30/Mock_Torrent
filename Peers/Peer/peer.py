@@ -40,7 +40,7 @@ root_path = os.path.abspath(os.path.dirname(__file__))
 def getLoginDetails():
     with open('network.json', 'r') as jf:
         data = json.load(jf)
-        return data['uid']
+        return data['uid'], data['ca_url']
 
 def connect_to_fullnodes():
     global fullnodes
@@ -137,10 +137,10 @@ if __name__ == '__main__':
     string2 = "gnome-terminal -e '" + string1 +"'"
     os.system(string2)
 
-    uid = getLoginDetails()
-    numberHash, hash512 = getEnrolled(uid)
-    status, token = authenticate(uid, numberHash, hash512)
-
+    uid, ca_url = getLoginDetails()
+    numberHash, hash512 = getEnrolled(uid, ca_url)
+    status, token = authenticate(uid, ca_url, numberHash, hash512)
+    print(status)
     if status == True:
 
         print("Authenticated")

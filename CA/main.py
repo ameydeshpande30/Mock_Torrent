@@ -1,4 +1,3 @@
-
 from flask import Flask, request
 from flask import jsonify
 import random
@@ -62,15 +61,15 @@ def check():
             num = str(data[uid])
             if num == number:
                 del data[uid]
-                return jsonify({"code": "1", "token": createJWT(uid)})
+                return jsonify({"code": 1, "token": createJWT(uid)})
             else:
-                return jsonify({"error": "bad request"})
+                return jsonify({"code": 2, "error": "bad request 1"})
                     
         except:
-            return jsonify({"error": "bad request"})
+            return jsonify({"code": 2, "error": "bad request 2"})
   
     else:
-        return jsonify({"error": "bad request"})
+        return jsonify({"code": 2, "error": "bad request 3"})
 
 
 app.run(port=5006, debug=False)
