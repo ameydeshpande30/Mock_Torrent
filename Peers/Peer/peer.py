@@ -40,7 +40,7 @@ root_path = os.path.abspath(os.path.dirname(__file__))
 def getLoginDetails():
     with open('network.json', 'r') as jf:
         data = json.load(jf)
-        return data['uid'], data['public_key'], data['private_key']
+        return data['uid']
 
 def connect_to_fullnodes():
     global fullnodes
@@ -137,11 +137,13 @@ if __name__ == '__main__':
     string2 = "gnome-terminal -e '" + string1 +"'"
     os.system(string2)
 
-    uid, public_key, private_key = getLoginDetails()
+    uid = getLoginDetails()
     numberHash, hash512 = getEnrolled(uid)
-    status = authenticate(uid, public_key, private_key, numberHash, hash512)
+    status, token = authenticate(uid, numberHash, hash512)
 
-    if not status:
+    if status == True:
+
+        print("Authenticated")
 
         while True:
             print("\n1.)Add Torrent")
@@ -152,7 +154,7 @@ if __name__ == '__main__':
             if choice == 1:
                 addtorrent()
             elif choice==2:
-                download_file(status)
+                download_file(token)
             else:
                 break
     else:

@@ -14,7 +14,7 @@ private_pem = private_key.exportKey().decode()
 public_pem = public_key.exportKey().decode()
 print(type(private_pem), type(public_pem))
 #Writing down the private and public keys to 'pem' files
-with open('pub/private_pem.pem', 'w') as pr:
+with open('pub/12345_private_pem.pem', 'w') as pr:
     pr.write(private_pem)
-with open('pub/public_pem.pem', 'w') as pu:
+with open('pub/12345.pem', 'w') as pu:
     pu.write(public_pem)

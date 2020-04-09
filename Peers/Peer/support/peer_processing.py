@@ -5,17 +5,20 @@ from support.download import start_download
 
 def get_peers(ip, token, fullnodes, fname):
     for i in fullnodes:
+        headers = {
+            "token": token
+        }
         i1 = "http://" + i + '/download'
-        data = {"token":token, "name":fname}
-        r1 = requests.post(i1,json=data)
+        data = {"name":fname}
+        r1 = requests.post(i1, headers=headers, json=data)
         # print(r.status_code)  
         # print(r.json())
 
         #Adding peer to network of torrent
         if r1.status_code == 200:
             i1 = "http://" + i + '/peer'
-            datap = {"token":token, "name":fname, "ip":ip}
-            r = requests.post(i1,json=datap)
+            datap = {"name":fname, "ip":ip}
+            r = requests.post(i1, headers=headers, json=datap)
             if r.status_code == 200:
                 return r1,1
             else:
@@ -36,10 +39,13 @@ def process_peers(response, token, fname):
     
     for i in response["peers"]:
         phash[counter] = i
+        headers = {
+            "token": token
+        }
+        data = {"name":fname}
         i1 = "http://" + i + "/fileinfo"
-        data = {"token":token, "name":fname}
         try:
-            r = requests.post(i1,json=data)
+            r = requests.post(i1, headers=headers, json=data)
             r = r.json()
             if r["code"] == 1:
                 print("r in download ")

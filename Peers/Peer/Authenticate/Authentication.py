@@ -7,7 +7,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from os.path import dirname, abspath
 
-base_url = "127.0.0.1:5006"
+base_url = "http://127.0.0.1:5006"
 root_path =  dirname(dirname(abspath(__file__)))
 
 
@@ -25,8 +25,8 @@ def getEnrolled(uid):
     return response['numberHash'], response['hash512']
 
 
-def authenticate(uid, public_key, private_key, numberHash, hash512):
-    number = getNumber(private_key, numberHash)
+def authenticate(uid, numberHash, hash512):
+    number = getNumber(uid, numberHash)
     payload = {
         "uid":uid,
         "number": number,
@@ -37,24 +37,18 @@ def authenticate(uid, public_key, private_key, numberHash, hash512):
     
     response = requests.post(url, json=payload)
     response = response.json()
-
-    if response['code'] == 1:
-        token = jwtVerify(response['token'], public_key)
-        return token
+    print(response)
+    if 'code' in response.keys() and response['code'] == 1 :
+        token = response['token']
+        return True, token
     else:
-        return False
+        return False, ""
 
 
-
-def getNumber(private_key, cipherText):
+def getNumber(uid, cipherText):
     cp = base64.decodebytes(cipherText.encode())
-    pr_key = RSA.importKey(open(private_key, 'r').read())
+    path = root_path + '/Authenticate/' + str(uid) + '_private_pem.pem'
+    pr_key = RSA.importKey(open(path, 'r').read())
     de = PKCS1_OAEP.new(key=pr_key)
     return de.decrypt(cp)
 
-def jwtVerify(token, public_key):
-    payload = jwt.decode(token, public_key, algorithms=['RS256'])
-    return payload
-
-
-         
