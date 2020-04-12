@@ -33,8 +33,8 @@ def get_ip():
 
 #Global Variables
 filemap = {}
-port = sys.argv[1]
-ip = get_ip() + ':' + port
+port = None
+ip = None
 fullnodes = []
 root_path = os.path.abspath(os.path.dirname(__file__))
 try:
@@ -129,6 +129,12 @@ def download_file(token):
 #=============================================================================================================================================
 if __name__ == '__main__': 
 
+    if len(sys.argv) == 1:
+        port = input("Please provide the port number:")
+    else:
+        port = sys.argv[1]
+    
+    ip = get_ip() + ':' + port
 
     connect_to_fullnodes()
     try:
